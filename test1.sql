@@ -16,3 +16,22 @@ EXECUTE ADD_DEPT('Test 1', 3000);
 
 -- Check data
 SELECT * FROM departments;
+
+-- Question 2 : Write a function that returns the total number of Employees
+-- in the employee table.
+
+-- Create Function
+CREATE OR REPLACE FUNCTION emp_count (
+p_emp OUT NUMBER)RETURN NUMBER IS
+BEGIN
+SELECT COUNT(*) INTO p_emp FROM employees;
+RETURN p_emp;
+END emp_count;
+
+-- Call Function
+DECLARE
+v_emp NUMBER;
+BEGIN
+v_emp := emp_count(v_emp);
+DBMS_OUTPUT.PUT_LINE(v_emp);
+END;
