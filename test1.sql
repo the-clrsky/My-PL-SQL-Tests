@@ -35,3 +35,28 @@ BEGIN
 v_emp := emp_count(v_emp);
 DBMS_OUTPUT.PUT_LINE(v_emp);
 END;
+
+
+-- Question 3 : Craete a Procedure called GET_EMPLOYEE to query the Employees table,
+-- retrieving the salary and job id for an employee when provided with the employee ID.
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE get_employee
+(p_emp IN NUMBER,
+p_salary OUT NUMBER,
+p_job_id OUT VARCHAR2) IS
+BEGIN
+SELECT salary, job_id INTO p_salary, p_job_id
+FROM employees
+WHERE employee_id = p_emp;
+END get_employee;
+
+-- Call Procedure
+DECLARE
+v_emp NUMBER := &emp;
+v_sal NUMBER;
+v_job_id VARCHAR2(50);
+BEGIN
+get_employee(v_emp, v_sal, v_job_id);
+DBMS_OUTPUT.PUT_LINE(v_sal || ' ' || v_job_id);
+END;
