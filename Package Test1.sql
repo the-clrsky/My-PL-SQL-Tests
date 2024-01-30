@@ -1,3 +1,4 @@
+-- Package Specification
 CREATE OR REPLACE PACKAGE job_pkg IS
     PROCEDURE add_job (p_jobid jobs.job_id%TYPE, p_job_title jobs.job_title%TYPE);
     PROCEDURE del_job (p_jobid JOBS.JOB_ID%TYPE);
@@ -6,6 +7,7 @@ CREATE OR REPLACE PACKAGE job_pkg IS
 END job_pkg;
 /
 
+-- Package Body
 CREATE OR REPLACE PACKAGE BODY job_pkg IS
     PROCEDURE add_job (
         p_jobid jobs.job_id%TYPE,
@@ -52,5 +54,5 @@ CREATE OR REPLACE PACKAGE BODY job_pkg IS
 END job_pkg;
 /
 
-
+-- Invoke Package
 EXECUTE job_pkg.add_job('IT_SYSAN', 'Systems Analyst')
