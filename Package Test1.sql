@@ -9,8 +9,7 @@ END job_pkg;
 
 -- Package Body
 CREATE OR REPLACE PACKAGE BODY job_pkg IS
-    PROCEDURE add_job (
-        p_jobid jobs.job_id%TYPE,
+    PROCEDURE add_job (p_jobid jobs.job_id%TYPE,
         p_jobtitle jobs.job_title%TYPE) IS
     BEGIN
         INSERT INTO jobs (job_id, job_title)
@@ -37,7 +36,7 @@ CREATE OR REPLACE PACKAGE BODY job_pkg IS
         RETURN v_title;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RETURN NULL; -- Return NULL if no data found for the job ID
+            RETURN NULL;
     END get_job;
 
     PROCEDURE upd_job(
