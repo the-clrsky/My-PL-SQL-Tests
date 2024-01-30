@@ -31,3 +31,47 @@ END;
 -- Check Data
 SELECT * from emp_new_table;
 
+/* Write a PL/SQL Procedure to show which employees get commission. */
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE emp_comm
+IS
+CURSOR c_emp IS
+SELECT employee_id emp, last_name lname, commission_pct comm
+FROM employees
+WHERE commission_pct IS NOT NULL;
+BEGIN
+FOR i IN c_emp LOOP
+DBMS_OUTPUT.PUT_LINE('Employee ' || i.emp || ', ' || i.lname || ' gets ' || i.comm);
+END LOOP;
+END emp_comm;
+
+-- Call Procedure
+BEGIN
+emp_comm;
+END;
+
+/* Write a PL/SQL Function to get the top salary of
+   a specific department. */
+
+-- Create Function
+CREATE OR REPLACE FUNCTION top_sal
+(p_dept NUMBER) RETURN NUMBER
+IS
+v_max NUMBER;
+BEGIN
+SELECT MAX(salary) INTO v_max FROM employees
+WHERE department_id = p_dept
+GROUP BY department_id;
+RETURN v_max;
+END top_sal;
+
+-- Call Function
+DECLARE
+v_dept NUMBER := 90;
+v_max NUMBER;
+BEGIN
+v_max := top_sal(v_dept);
+DBMS_OUTPUT.PUT_LINE(v_max);
+END;
+
