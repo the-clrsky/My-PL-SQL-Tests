@@ -1,0 +1,94 @@
+---Ques#1
+
+A.
+CREATE OR REPLACE FUNCTION get_job (p_jobid IN VARCHAR2)
+RETURN VARCHAR2 IS
+v_title VARCHAR2(100);
+BEGIN
+SELECT job_title INTO v_title FROM jobs
+WHERE job_id=p_jobid;
+RETURN v_title;
+END get_job;
+/
+
+B.
+VARIABLE b_title VARCHAR2(35); --Bind Variable
+EXECUTE :b_title:=get_job('SA_REP');
+PRINT
+
+OR
+EXECUTE dbms_output.put_line(get_job('SA_REP')); --Normal Call
+
+DECLARE --Anonymous BLOCK
+v_title VARCHAR2(50);
+BEGIN
+v_title:=get_job('AD_VP');
+DBMS_OUTPUT.PUT_LINE(v_title);
+END;
+/
+
+---Ques#2
+
+A.
+CREATE OR REPLACE FUNCTION get_annual_comp(p_sal IN NUMBER, p_comm IN NUMBER)
+RETURN NUMBER IS
+BEGIN
+RETURN ((NVL(p_sal,0)*12)+(NVL(p_comm,0)*p_sal)*12); --Just Calculatioin, NO data retrive
+END get_annual_comp;
+/
+
+B.
+SELECT employee_id, last_name, get_annual_comp(salary, commission_pct) "Annual Salary"
+FROM employees WHERE department_id=30;
+
+---FOR Calculate ANNUAL SALARY---
+
+CREATE OR REPLACE FUNCTION get_annual_sal(p_id IN NUMBER)
+RETURN NUMBER IS
+v_ann_sal NUMBER;
+BEGIN
+SELECT (salary+(NVL(commission_pct,0)*salary))*12 INTO v_ann_sal
+FROM employees WHERE employee_id=p_id;
+RETURN v_ann_sal;
+END get_annual_sal;
+/
+
+EXECUTE DBMS_OUTPUT.PUT_LINE(get_annual_sal(115));
+
+
+---Ques#3
+
+A.
+CREATE OR REPLACE FUNCTION valid_deptid(p_dept_id IN NUMBER)
+RETURN BOOLEAN IS
+v_num NUMBER;
+BEGIN
+SELECT 1 INTO v_num FROM departments 
+WHERE department_id=p_dept_id;
+RETURN TRUE;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+RETURN FALSE;
+END valid_deptid;
+/
+
+B.
+CREATE OR REPLACE PROCEDURE add_employee(p_first_name VARCHAR2, p_last_name VARCHAR2, p_email VARCHAR2,
+p_job VARCHAR2, p_mrg NUMBER, p_sal NUMBER, p_comm NUMBER, p_dept_id NUMBER)
+IS
+BEGIN
+IF valid_deptid(p_dept_id) THEN
+INSERT INTO employees(employee_id, first_name, last_name, email, job_id, manager_id, hire_date, salary, commission_pct, department_id)
+VALUES
+(EMPLOYEES_SEQ.NEXTVAL,p_first_name,p_last_name,p_email,p_job, p_mrg,SYSDATE, p_sal,p_comm, p_dept_id );
+ELSE
+RAISE_APPLICATION_ERROR(-20204, 'Invalid Department Id');
+END IF;
+END add_employee;
+/
+
+C.
+EXECUTE add_employee('Jane', 'Harris', 'JHARRIS', 'ST_MAN', NULL, NULL,NULL, p_dept_id=>15);
+
+D.
+EXECUTE add_employee('Jane', 'Harris', 'JHARRIS', 'ST_MAN', NULL, NULL,NULL, p_dept_id=>270);

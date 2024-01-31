@@ -1,0 +1,68 @@
+1. NO create a procedure call add_dept to  insert a new  department into the department tabale.provide the  departments name and location id 
+of the department using two parameters.
+
+CREATE OR REPLACE PROCEDURE ADD_DEPT 
+(p_dept_name IN VARCHAR2,
+p_loc_id IN NUMBER)
+IS
+BEGIN
+INSERT INTO departments(department_id, department_name, manager_id, location_id)
+VALUES(DEPARTMENTS_SEQ.NEXTVAL, p_dept_name, null, p_loc_id);
+END ADD_DEPT;
+/
+
+-- Invoke Procedure
+BEGIN
+ADD_DEPT('Test 1', 3100);
+END;
+/
+
+
+2.NO writre a funtion that returns the total number of employees in the employee table.
+
+CREATE OR REPLACE FUNCTION get_total
+RETURN NUMBER
+IS
+  v_total_count NUMBER;
+BEGIN
+  SELECT COUNT(*) INTO v_total_count FROM employees;
+  RETURN v_total_count;
+END ;
+/
+
+begin 
+dbms_output.put_line (get_total);
+end;
+/
+
+
+
+3.NO create a procedure called get_employee to query the employees table, retrieving the salary and job id for an employee when provided with
+ the employee id.
+
+CREATE OR REPLACE PROCEDURE tee_sad 
+( p_employee_id IN NUMBER)
+IS
+    v_salary NUMBER;
+    v_job_id VARCHAR2(50);
+BEGIN
+    -- Querying the employees table based on the provided employee id
+    SELECT salary, job_id
+    INTO v_salary, v_job_id
+    FROM employees
+    WHERE employee_id = p_employee_id;  DBMS_OUTPUT.PUT_LINE( p_employee_id || '   ' || v_salary || '  ' ||   v_job_id ); 
+END ;
+/
+
+
+
+
+
+
+
+
+
+
+
+
+

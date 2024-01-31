@@ -1,0 +1,99 @@
+---Ques#1
+
+A.
+CREATE OR REPLACE PROCEDURE add_job (p_id VARCHAR2, p_title VARCHAR2) --PROCEDURE syntax;
+IS
+BEGIN
+INSERT INTO jobs (job_id, job_title)
+VALUES (p_id, p_title); --SQL statement;
+COMMIT;
+END add_job; --PROCEDURE name OPTIONAL;
+/
+
+B.
+EXECUTE add_job('IT_DBA', 'Database Administrator'); --Should Follow the PARAMETER ORDER;
+
+SELECT *FROM jobs WHERE job_id='IT_DBA';
+
+C.
+EXECUTE add_job('ST_MAN', 'Stock Manager'); -- job_id uniqe, already exist ST_MAN;
+
+
+---Ques#2
+
+A.
+CREATE OR REPLACE PROCEDURE upd_job(p_id VARCHAR2, p_title VARCHAR2)
+IS
+BEGIN
+UPDATE jobs
+SET job_title=p_title
+WHERE job_id=p_id;
+IF SQL%NOTFOUND THEN
+RAISE_APPLICATION_ERROR(-20202, 'No Job Updated'); --Exeption Handle;
+END IF;
+END upd_job;
+/
+
+B.
+EXECUTE upd_job('IT_DBA', 'Data Administrator');
+
+SELECT *FROM jobs WHERE job_id='IT_DBA';
+
+C.
+EXECUTE upd_job('IT_WEB','Web Master'); --To Rise USER DEFINE EXEPTION;
+
+SELECT *FROM jobs WHERE job_id='IT_WEB';
+
+
+---Ques#3
+
+A.
+CREATE OR REPLACE PROCEDURE del_job(p_jobid VARCHAR2)
+IS
+BEGIN
+DELETE FROM jobs
+WHERE job_id=p_jobid;
+IF SQL%NOTFOUND THEN
+RAISE_APPLICATION_ERROR(-20203, 'No Jobs Delete'); 
+END IF;
+END del_job;
+/
+
+B.
+EXECUTE del_job('IT_DBA');
+
+C.
+EXECUTE del_job('IT_WEB');
+
+
+---Ques#4
+
+A.
+CREATE OR REPLACE PROCEDURE get_employee
+(p_emp_id IN NUMBER,p_sal OUT NUMBER, p_job_id OUT VARCHAR2) 
+IS
+BEGIN
+SELECT salary, job_id INTO p_sal, p_job_id FROM employees 
+WHERE employee_id=p_emp_id;
+END get_employee;
+/
+
+B.
+DECLARE
+v_sal NUMBER;
+v_jid VARCHAR2(50);
+BEGIN
+get_employee(102, v_sal, v_jid);
+DBMS_OUTPUT.PUT_LINE(v_sal||' '||v_jid);
+END;
+/
+
+C.
+DECLARE
+v_sal NUMBER;
+v_jid VARCHAR2(50);
+BEGIN
+get_employee(300, v_sal, v_jid);
+DBMS_OUTPUT.PUT_LINE(v_sal||' '||v_jid);
+END;
+/
