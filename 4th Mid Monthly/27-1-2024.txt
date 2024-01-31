@@ -1,0 +1,62 @@
+Question 1.
+
+-- Create TABLE
+CREATE TABLE emp_new_table
+AS
+SELECT * FROM employees;
+
+-- TRUNCATE Table
+TRUNCATE TABLE emp_new_table;
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE copy_from_emp
+IS
+CURSOR c_employees IS SELECT * FROM employees;
+BEGIN
+FOR i IN c_employees LOOP
+INSERT INTO emp_new_table
+VALUES (i.employee_id, i.first_name, i.last_name, i.email, i.phone_number, i.hire_date, i.job_id, i.salary, 
+i.commission_pct, i.manager_id, i.department_id);
+END LOOP;
+END copy_from_emp;
+
+-- Get data
+SELECT * FROM emp_new_table;
+
+Question 2.
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE emp_comm
+IS
+CURSOR c_commission IS
+SELECT * FROM employees
+WHERE commission_pct IS NOT NULL
+ORDER BY commission_pct;
+BEGIN
+FOR i IN c_commission
+LOOP
+DBMS_OUTPUT.PUT_LINE (i.first_name || ' ' || i.last_name || q'!'s commission pct is: !' || i.commission_pct);
+END LOOP;
+END emp_comm;
+
+Question 3.
+
+-- Create Function
+CREATE OR REPLACE FUNCTION max_sal (p_dept_id IN NUMBER) RETURN NUMBER
+IS
+v_sal   NUMBER;
+BEGIN
+SELECT MAX (salary) INTO v_sal FROM employees
+WHERE department_id = p_dept_id;
+RETURN v_sal;
+END max_sal;
+
+-- Get data
+SELECT max_sal(80) FROM dual;
+
+
+1. Create a procedure called ADD_DEPT to insert a new department into the departments table.
+Provide the DEPARTMENT NAME and LOCATION ID of the department using two parameters.
+2. Write a function that returns the total number of EMPLOYEES in the employee table. 3.
+Create a procedure called GET_EMPLOYEE to query the EMPLOYEES table, retrieving the
+salary and job ID for an employee when provided with the employee ID.
