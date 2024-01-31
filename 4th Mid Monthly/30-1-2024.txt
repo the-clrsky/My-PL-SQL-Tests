@@ -1,0 +1,398 @@
+/* Write a PL/SQL procedure to insert data from
+   employees table to the new_emp_table using cursor. */
+
+-- Create TABLE
+CREATE TABLE emp_new_table
+AS
+SELECT * FROM employees;
+
+-- Truncate Table
+TRUNCATE TABLE emp_new_table;
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE insert_emp_data
+IS
+CURSOR c_emp IS
+SELECT * FROM employees;
+BEGIN
+FOR i IN c_emp LOOP
+INSERT INTO emp_new_table
+VALUES(i.EMPLOYEE_ID, i.FIRST_NAME, i.LAST_NAME, i.EMAIL,
+       i.PHONE_NUMBER, i.HIRE_DATE, i.JOB_ID, i.SALARY,
+       i.COMMISSION_PCT, i.MANAGER_ID, i.DEPARTMENT_ID);
+END LOOP;
+END insert_emp_data;
+
+-- Call Procedure
+BEGIN
+insert_emp_data;
+END;
+
+-- Check Data
+SELECT * from emp_new_table;
+
+
+/* Write a PL/SQL Procedure to show which employees get commission. */
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE emp_comm
+IS
+CURSOR c_emp IS
+SELECT employee_id emp, last_name lname, commission_pct comm
+FROM employees
+WHERE commission_pct IS NOT NULL;
+BEGIN
+FOR i IN c_emp LOOP
+DBMS_OUTPUT.PUT_LINE('Employee ' || i.emp || ', ' || i.lname || ' gets ' || i.comm);
+END LOOP;
+END emp_comm;
+
+-- Call Procedure
+BEGIN
+emp_comm;
+END;
+
+/* Write a PL/SQL Function to get the top salary of
+   a specific department. */
+
+-- Create Function
+CREATE OR REPLACE FUNCTION top_sal
+(p_dept NUMBER) RETURN NUMBER
+IS
+v_max NUMBER;
+BEGIN
+SELECT MAX(salary) INTO v_max FROM employees
+WHERE department_id = p_dept
+GROUP BY department_id;
+RETURN v_max;
+END top_sal;
+
+-- Call Function
+DECLARE
+v_dept NUMBER := 90;
+v_max NUMBER;
+BEGIN
+v_max := top_sal(v_dept);
+DBMS_OUTPUT.PUT_LINE(v_max);
+END;
+
+/* Create a procedure called ADD_DEPT to insert a new department into
+   the departments table. Provide the DEPARTMENT NAME and LOCATION ID of the 
+   department using two paremeners. */
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE ADD_DEPT (
+p_dept_name IN VARCHAR2,
+p_loc IN NUMBER) IS
+BEGIN
+INSERT INTO departments
+VALUES (DEPARTMENTS_SEQ.NEXTVAL, p_dept_name, null, p_loc);
+END ADD_DEPT;
+
+-- Call the procedure
+EXECUTE ADD_DEPT('Test 1', 3000);
+
+-- Check data
+SELECT * FROM departments;
+
+/* Write a function that returns the total number of Employees
+   in the employee table. */
+
+-- Create Function
+CREATE OR REPLACE FUNCTION emp_count (
+p_emp OUT NUMBER)RETURN NUMBER IS
+BEGIN
+SELECT COUNT(*) INTO p_emp FROM employees;
+RETURN p_emp;
+END emp_count;
+
+-- Call Function
+DECLARE
+v_emp NUMBER;
+BEGIN
+v_emp := emp_count(v_emp);
+DBMS_OUTPUT.PUT_LINE(v_emp);
+END;
+
+
+/* Craete a Procedure called GET_EMPLOYEE to query the Employees table,
+  retrieving the salary and job id for an employee when provided with the employee ID. */
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE get_employee
+(p_emp IN NUMBER,
+p_salary OUT NUMBER,
+p_job_id OUT VARCHAR2) IS
+BEGIN
+SELECT salary, job_id INTO p_salary, p_job_id
+FROM employees
+WHERE employee_id = p_emp;
+END get_employee;
+
+-- Call Procedure
+DECLARE
+v_emp NUMBER := &emp;
+v_sal NUMBER;
+v_job_id VARCHAR2(50);
+BEGIN
+get_employee(v_emp, v_sal, v_job_id);
+DBMS_OUTPUT.PUT_LINE(v_sal || ' ' || v_job_id);
+END;
+
+-- Question 1. Create a procedure called ADD_DEPT to insert a new department into the departments table. 
+               Provide the DEPARTMENT NAME and LOCATION ID of the department using two parameters.
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE ADD_DEPT 
+(p_dept_name IN VARCHAR2,
+p_loc_id IN NUMBER)
+IS
+BEGIN
+INSERT INTO departments(department_id, department_name, manager_id, location_id)
+VALUES(DEPARTMENTS_SEQ.NEXTVAL, p_dept_name, null, p_loc_id);
+END ADD_DEPT;
+
+-- Invoke Procedure
+BEGIN
+ADD_DEPT('Test 1', 3100);
+END;
+
+-- Check
+SELECT * FROM departments;
+
+-- Question 2. Write a function that returns the total number of EMPLOYEES in the employee table.
+
+-- Create FUNCTION
+CREATE OR REPLACE FUNCTION emp_count RETURN NUMBER
+IS
+emp_num NUMBER;
+BEGIN
+SELECT COUNT(*) INTO emp_num FROM employees;
+RETURN emp_num;
+END emp_count;
+
+-- Get OUTPUT
+EXECUTE DBMS_OUTPUT.PUT_LINE(emp_count);
+
+-- Question 3. Create a procedure called GET_EMPLOYEE to query the EMPLOYEES table, 
+               retrieving the salary and job ID for an employee when provided with the employee ID.
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE GET_EMPLOYEE
+(p_emp_id IN NUMBER)
+IS
+v_sal NUMBER;
+v_job_id VARCHAR2(100);
+BEGIN
+SELECT salary, job_id INTO v_sal, v_job_id FROM employees
+WHERE employee_id = p_emp_id;
+DBMS_OUTPUT.PUT_LINE('Salary is: '|| v_sal || ' ' || 'Job ID: ' || v_job_id);
+END GET_EMPLOYEE;
+
+-- Invoke Procedure
+BEGIN
+GET_EMPLOYEE(105);
+END;
+
+/* Q1. Write a PL/SQL block to insert data from employees to new emp_new_table
+    using cursor. */
+
+-- Create TABLE
+CREATE TABLE emp_new_table
+AS
+SELECT * FROM employees;
+
+-- TRUNCATE Table
+TRUNCATE TABLE emp_new_table;
+
+-- PL/SQL Block
+DECLARE
+    CURSOR c_employees IS SELECT * FROM employees;
+BEGIN
+    FOR i IN c_employees
+    LOOP
+        INSERT INTO emp_new_table
+             VALUES (i.employee_id,
+                     i.first_name,
+                     i.last_name,
+                     i.email,
+                     i.phone_number,
+                     i.hire_date,
+                     i.job_id,
+                     i.salary,
+                     i.commission_pct,
+                     i.manager_id,
+                     i.department_id,
+                     i.stars);   -- Please check your employees TABLE
+    END LOOP;
+END;
+
+/* Q2. Write a PL/SQL block to show the data which employees get commission_pct. */
+
+-- PL/SQL Block
+DECLARE
+    CURSOR c_commission IS
+          SELECT * FROM employees
+           WHERE commission_pct IS NOT NULL
+        ORDER BY commission_pct;
+BEGIN
+    FOR i IN c_commission
+    LOOP
+        DBMS_OUTPUT.PUT_LINE (
+               i.first_name
+            || ' '
+            || i.last_name
+            || q'!'s commission pct is: !'
+            || '0'
+            ||i.commission_pct);
+    END LOOP;
+END;
+
+
+/* Q3. Write a PL/SQL function to get the top salary of a specific departmnet. */
+
+-- Create Function
+CREATE OR REPLACE FUNCTION max_sal (p_dept_id IN NUMBER)
+    RETURN NUMBER
+IS
+    v_sal   NUMBER;
+BEGIN
+    SELECT MAX (salary) INTO v_sal
+      FROM employees
+     WHERE department_id = p_dept_id;
+    RETURN v_sal;
+END max_sal;
+
+-- Get data using PL/SQL
+DECLARE
+    v_get_max_sal   NUMBER;
+BEGIN
+    v_get_max_sal := max_sal (80);
+    DBMS_OUTPUT.PUT_LINE (v_get_max_sal);
+END;
+
+-- Get data using SQL
+SELECT max_sal(80) FROM dual;
+
+
+/* Q4. Write a procedure to show the AVG salary of every department. */
+
+-- Create Procedure
+CREATE OR REPLACE PROCEDURE avg_sal
+IS
+    CURSOR c_avg_sal IS
+          SELECT d.department_name dept_name, ROUND(AVG (e.salary), 2) avg_sal
+            FROM employees e JOIN departments d 
+            ON e.department_id = d.department_id
+        GROUP BY e.department_id, d.department_name;
+BEGIN
+    FOR i IN c_avg_sal
+    LOOP
+        DBMS_OUTPUT.PUT_LINE (i.dept_name || q'!'s average salary is: !' || i.avg_sal);
+    END LOOP;
+END;
+
+-- Invoke Procedure
+BEGIN
+    avg_sal;
+END;
+
+/* Q5. Create a PL/SQL block, that selects the minimum department_id in the
+       departments table and store it in the v_did variable.
+       Display the minimum Department ID. */
+
+-- PL/SQL Block
+DECLARE
+    v_did   NUMBER;
+BEGIN
+    SELECT MIN (department_id) INTO v_did FROM departments;
+    DBMS_OUTPUT.PUT_LINE ('Minimum Department ID: ' || v_did);
+END;
+
+/* Q6. Create a PL/SQL block that retrieves the Last Name, Hire Date and Salary 
+       for the specified employees from the employees table. */
+
+-- PL/SQL Block
+DECLARE
+    v_emp_id      NUMBER := 107;
+    v_lname       VARCHAR2 (100);
+    v_hire_date   DATE;
+    v_salary      NUMBER;
+BEGIN
+    SELECT last_name, hire_date, salary
+      INTO v_lname, v_hire_date, v_salary
+      FROM employees
+     WHERE employee_id = v_emp_id;
+    DBMS_OUTPUT.PUT_LINE (
+           'Name: '
+        || v_lname
+        || ', Hired on: '
+        || v_hire_date
+        || ', Salary: '
+        || v_salary);
+END;
+
+
+/* Q7. Write a PL/SQL program to print odd numbers between 1 to 10. */
+
+-- PL/SQL Block
+DECLARE
+    v_num_start   NUMBER := 1;
+    v_num_end     NUMBER := 10;
+BEGIN
+    FOR i IN v_num_start .. v_num_end
+    LOOP
+        IF MOD (i, 2) != 0  -- Vagsesh 0 na hole, bijor
+        THEN
+            DBMS_OUTPUT.PUT_LINE (i);
+        END IF;
+    END LOOP;
+END;
+
+
+/* Q8. Write a PL/SQL program to print even numbers between 1 to 10. */
+
+-- PL/SQL Block
+DECLARE
+    v_num_start   NUMBER := 1;
+    v_num_end     NUMBER := 10;
+BEGIN
+    FOR i IN v_num_start .. v_num_end
+    LOOP
+        IF MOD (i, 2) = 0  -- Vagsesh 0, tai jor
+        THEN
+            DBMS_OUTPUT.PUT_LINE (i);
+        END IF;
+    END LOOP;
+END;
+
+
+/* Q9. Create a PL/SQL block that selects the all the
+       Employee Name, Department Name, Salary, Job ID. */
+
+-- PL/SQL Block
+DECLARE
+    CURSOR c_emp_data IS
+        SELECT e.first_name,
+               e.last_name,
+               d.department_name,
+               e.salary,
+               e.job_id
+          FROM employees  e                     -- Left outer join, naile 106 ta employee ase
+               LEFT OUTER JOIN departments d    -- karon, ekjoner department id nai
+                   ON e.department_id = d.department_id;
+BEGIN
+    FOR i IN c_emp_data
+    LOOP
+        DBMS_OUTPUT.PUT_LINE (
+               i.first_name
+            || ' '
+            || i.last_name
+            || ', '
+            || i.department_name
+            || ', '
+            || i.salary
+            || ', '
+            || i.job_id);
+    END LOOP;
+END;
