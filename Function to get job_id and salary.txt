@@ -1,0 +1,26 @@
+-- Create Function
+CREATE OR REPLACE FUNCTION emp_info
+    (p_id NUMBER) RETURN VARCHAR2
+    IS
+    v_job_id VARCHAR2(10);
+    v_salary NUMBER;
+    BEGIN
+   SELECT job_id, salary INTO v_job_id, v_salary
+    FROM employees
+    WHERE employee_id = p_id;
+    RETURN v_job_id || ' ' || v_salary;
+  END;
+  /
+
+-- Invoke Function
+EXEC DBMS_OUTPUT.PUT_LINE(emp_info(101));
+
+-- Get all employee data
+DECLARE
+CURSOR c_emp IS
+SELECT employee_id FROM employees;
+BEGIN
+FOR i IN c_emp LOOP
+DBMS_OUTPUT.PUT_LINE(emp_info(i.employee_id));
+END LOOP;
+END;
