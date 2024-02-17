@@ -1,0 +1,26 @@
+-- Create Function
+CREATE OR REPLACE FUNCTION valid_deptid(p_dept_id IN NUMBER)
+RETURN BOOLEAN IS
+v_num NUMBER;
+BEGIN
+SELECT 1 INTO v_num FROM departments 
+WHERE department_id=p_dept_id;
+RETURN TRUE;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+RETURN FALSE;
+END valid_deptid;
+/
+
+
+-- Check Function
+DECLARE
+    v_result BOOLEAN;
+BEGIN
+    v_result := valid_deptid(20);
+    IF v_result THEN
+        DBMS_OUTPUT.PUT_LINE('Valid');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Invalid');
+    END IF;
+END;
