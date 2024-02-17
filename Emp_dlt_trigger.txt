@@ -1,0 +1,17 @@
+-- Create TRIGGER (Will get error at home)
+CREATE OR REPLACE TRIGGER delete_emp_trg
+BEFORE DELETE ON emp_copy
+FOR EACH ROW
+DECLARE
+v_today VARCHAR2(3) := TO_CHAR(SYSDATE, 'DY');
+v_time NUMBER := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+BEGIN
+IF (v_time BETWEEN 9 AND 17) AND (v_today NOT IN ('FRI')) THEN
+RAISE_APPLICATION_ERROR(-20210, 'Employees cannot be deleted on Weekdays');
+END IF;
+END;
+/
+
+-- Test TRIGGER
+DELETE FROM emp_copy
+WHERE employee_id = 101;
